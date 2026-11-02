@@ -1,0 +1,21 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Environment secrets
+.env
+.env.*
+
+# Allow the example environment file
+!.env.example
+
+# Frontend
+node_modules/
+frontend/dist/
+
+# Editors and operating systems
+.vscode/
+.DS_Store
