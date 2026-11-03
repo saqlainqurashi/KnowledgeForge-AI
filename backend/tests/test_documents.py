@@ -31,7 +31,7 @@ def test_upload_txt_successfully():
     data = response.json()
 
     assert data["filename"] == "knowledge.txt"
-    assert data["status"] == "processed"
+    assert data["status"] == "stored"
     assert data["total_characters"] == len(content.decode())
     assert data["total_chunks"] == 1
     assert len(data["chunks"]) == 1
