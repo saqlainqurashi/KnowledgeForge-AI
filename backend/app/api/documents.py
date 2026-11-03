@@ -1,19 +1,19 @@
-
-from typing import Annotated
-
-from fastapi import APIRouter, File, HTTPException, UploadFile
-
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+from sqlalchemy.orm import Session
+from app.core.database import get_db
 from app.services.chunking import chunk_text
-from app.services.document_loader import (
-    MAX_FILE_SIZE,
-    extract_text,
-)
+from app.services.document_loader import MAX_FILE_SIZE, extract_text
+from app.services.document_storage import save_document
+from app.services.embeddings import generate_embeddings
 
 router = APIRouter(prefix="/documents", tags=["Documents"])
 
 
 @router.post("/upload")
-async def upload_document(file: Annotated[UploadFile, File(...)]):
+async def upload_document(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
     filename = file.filename or ""
 
     if not filename.lower().endswith((".pdf", ".txt")):
@@ -22,15 +22,15 @@ async def upload_document(file: Annotated[UploadFile, File(...)]):
             detail="Only PDF and TXT files are supported",
         )
 
-    content = await file.read(MAX_FILE_SIZE + 1)
-
-    if len(content) > MAX_FILE_SIZE:
-        raise HTTPException(
-            status_code=413,
-            detail="File exceeds the 10 MB size limit",
-        )
-
     try:
+        content = await file.read(MAX_FILE_SIZE + 1)
+
+        if len(content) > MAX_FILE_SIZE:
+            raise HTTPException(
+                status_code=413,
+                detail="File exceeds the 10 MB size limit",
+            )
+
         extracted_text = extract_text(filename, content)
 
         chunks = chunk_text(
@@ -39,12 +39,21 @@ async def upload_document(file: Annotated[UploadFile, File(...)]):
             chunk_overlap=50,
         )
 
+        embeddings = generate_embeddings(chunks)
+
+        document = save_document(
+            db=db,
+            filename=filename,
+            chunks=chunks,
+            embeddings=embeddings,
+        )
+
         return {
+            "document_id": document.id,
             "filename": filename,
-            "status": "processed",
+            "status": "stored",
             "total_characters": len(extracted_text),
             "total_chunks": len(chunks),
-            "chunks": chunks,
         }
 
     except ValueError as exc:
