@@ -1,21 +1,26 @@
 # Python
 venv/
+.venv/
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
+.coverage
+htmlcov/
 
 # Environment secrets
 .env
 .env.*
 
-# Allow the example environment file
+# Allow example environment files
 !.env.example
 
 # Frontend
 node_modules/
-frontend/dist/
+dist/
+coverage/
 
 # Editors and operating systems
 .vscode/
 .DS_Store
+Thumbs.db
