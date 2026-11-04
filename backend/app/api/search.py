@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -16,7 +18,7 @@ class SearchRequest(BaseModel):
 @router.post("/")
 def semantic_search(
     request: SearchRequest,
-    db: Session = Depends(get_db),
+    db: Annotated[Session, Depends(get_db)],
 ):
     try:
         results = search_similar_chunks(
