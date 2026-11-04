@@ -80,6 +80,7 @@ def test_rag_generates_grounded_answer():
         db=db,
         query="How does RAG work?",
         top_k=2,
+        min_similarity=0.60,
     )
 
     mock_generate.assert_called_once()
@@ -89,3 +90,26 @@ def test_rag_generates_grounded_answer():
     assert "[1] Source: AI Concepts.txt" in generated_context
     assert "RAG combines retrieval with generation." in generated_context
     assert "[2] Source: AI Concepts.txt" in generated_context
+
+
+
+def test_irrelevant_context_does_not_call_gemini():
+    db = MagicMock()
+
+    with (
+        patch(
+            "app.services.rag_service.search_similar_chunks",
+            return_value=[],
+        ),
+        patch(
+            "app.services.rag_service.generate_answer",
+        ) as mock_generate,
+    ):
+        result = answer_question(
+            db,
+            "What is the capital of France?",
+        )
+
+    assert result["sources"] == []
+    assert result["answer"] == "No relevant documents were found."
+    mock_generate.assert_not_called()

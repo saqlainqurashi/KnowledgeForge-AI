@@ -50,6 +50,7 @@ def test_search_returns_ranked_chunks():
             db,
             "How does RAG work?",
             top_k=2,
+
         )
 
     assert len(results) == 2
@@ -58,3 +59,14 @@ def test_search_returns_ranked_chunks():
     assert results[1]["similarity"] == 0.75
 
     db.execute.assert_called_once()
+
+    
+def test_reject_invalid_similarity():
+    db = MagicMock()
+
+    with pytest.raises(ValueError, match="min_similarity"):
+        search_similar_chunks(
+            db,
+            "What is RAG?",
+            min_similarity=1.5,
+        )

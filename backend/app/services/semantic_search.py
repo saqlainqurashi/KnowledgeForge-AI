@@ -9,6 +9,7 @@ def search_similar_chunks(
     db: Session,
     query: str,
     top_k: int = 3,
+    min_similarity: float = 0.0,
 ) -> list[dict]:
     """Find document chunks most similar to a question."""
 
@@ -18,15 +19,20 @@ def search_similar_chunks(
     if not 1 <= top_k <= 20:
         raise ValueError("top_k must be between 1 and 20")
 
-    # Step 1: Convert the question into an embedding.
+    if not 0.0 <= min_similarity <= 1.0:
+        raise ValueError(
+            "min_similarity must be between 0 and 1"
+        )
+
+    # Generate the question embedding
     query_embedding = generate_embeddings([query])[0]
 
-    # Step 2: Calculate cosine distance.
+    # Calculate cosine distance
     distance = DocumentChunk.embedding.cosine_distance(
         query_embedding
     )
 
-    # Step 3: Find the closest document chunks.
+    # Retrieve chunks that meet the similarity threshold
     statement = (
         select(
             DocumentChunk,
@@ -37,13 +43,13 @@ def search_similar_chunks(
             Document,
             DocumentChunk.document_id == Document.id,
         )
+        .where(distance <= 1 - min_similarity)
         .order_by(distance)
         .limit(top_k)
     )
 
     results = db.execute(statement).all()
 
-    # Step 4: Return results with similarity scores.
     return [
         {
             "chunk_id": chunk.id,

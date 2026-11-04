@@ -8,6 +8,7 @@ def answer_question(
     db: Session,
     question: str,
     top_k: int = 3,
+    min_similarity= 0.60,
 ) -> dict:
     """Retrieve relevant chunks and generate a grounded answer."""
 
@@ -18,6 +19,7 @@ def answer_question(
         db=db,
         query=question,
         top_k=top_k,
+        min_similarity=min_similarity,
     )
 
     if not chunks:
