@@ -1,4 +1,3 @@
-
 from functools import lru_cache
 
 from sentence_transformers import SentenceTransformer

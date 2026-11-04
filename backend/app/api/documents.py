@@ -1,5 +1,8 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
+
 from app.core.database import get_db
 from app.services.chunking import chunk_text
 from app.services.document_loader import MAX_FILE_SIZE, extract_text
@@ -11,8 +14,8 @@ router = APIRouter(prefix="/documents", tags=["Documents"])
 
 @router.post("/upload")
 async def upload_document(
-    file: UploadFile = File(...),
-    db: Session = Depends(get_db),
+    file: Annotated[UploadFile, File()],
+    db: Annotated[Session, Depends(get_db)],
 ):
     filename = file.filename or ""
 

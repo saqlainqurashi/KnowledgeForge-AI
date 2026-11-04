@@ -1,4 +1,3 @@
-
 from io import BytesIO
 
 from fastapi.testclient import TestClient
@@ -11,9 +10,7 @@ client = TestClient(app)
 
 
 def test_upload_txt_successfully():
-    content = (
-        b"KnowledgeForge AI is an enterprise knowledge assistant."
-    )
+    content = b"KnowledgeForge AI is an enterprise knowledge assistant."
 
     response = client.post(
         "/documents/upload",
@@ -58,9 +55,7 @@ def test_upload_pdf_successfully():
     )
 
     assert response.status_code == 400
-    assert response.json()["detail"] == (
-        "No extractable text found in document"
-    )
+    assert response.json()["detail"] == ("No extractable text found in document")
 
 
 def test_reject_unsupported_file_type():
@@ -76,9 +71,7 @@ def test_reject_unsupported_file_type():
     )
 
     assert response.status_code == 400
-    assert response.json()["detail"] == (
-        "Only PDF and TXT files are supported"
-    )
+    assert response.json()["detail"] == ("Only PDF and TXT files are supported")
 
 
 def test_reject_empty_txt_file():
@@ -112,9 +105,7 @@ def test_reject_oversized_file():
     )
 
     assert response.status_code == 413
-    assert response.json()["detail"] == (
-        "File exceeds the 10 MB size limit"
-    )
+    assert response.json()["detail"] == ("File exceeds the 10 MB size limit")
 
 
 def test_reject_malformed_pdf():
@@ -130,6 +121,4 @@ def test_reject_malformed_pdf():
     )
 
     assert response.status_code == 400
-    assert response.json()["detail"] == (
-        "Could not read PDF file"
-    )
+    assert response.json()["detail"] == ("Could not read PDF file")

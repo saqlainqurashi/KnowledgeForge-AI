@@ -1,4 +1,3 @@
-
 from io import BytesIO
 
 from pypdf import PdfReader  # type: ignore
@@ -45,10 +44,7 @@ def extract_text(
             if reader.is_encrypted:
                 raise ValueError("Encrypted PDFs are not supported")
 
-            text = "\n".join(
-                page.extract_text() or ""
-                for page in reader.pages
-            )
+            text = "\n".join(page.extract_text() or "" for page in reader.pages)
 
         except ValueError:
             raise

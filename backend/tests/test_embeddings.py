@@ -1,4 +1,3 @@
-
 import pytest
 
 from app.services.embeddings import generate_embeddings

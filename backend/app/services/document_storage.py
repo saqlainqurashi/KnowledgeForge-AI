@@ -19,9 +19,7 @@ def save_document(
 
     document = Document(filename=filename)
 
-    for index, (content, embedding) in enumerate(
-        zip(chunks, embeddings)
-    ):
+    for index, (content, embedding) in enumerate(zip(chunks, embeddings)):
         document.chunks.append(
             DocumentChunk(
                 chunk_index=index,
