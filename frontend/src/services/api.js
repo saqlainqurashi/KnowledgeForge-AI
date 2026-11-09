@@ -47,3 +47,35 @@ export async function askQuestion(question, topK = 3) {
 
   return data;
 }
+
+
+export async function getDocuments() {
+  const response = await fetch(`${API_URL}/documents/`);
+
+  if (!response.ok) {
+    throw new Error("Unable to load documents");
+  }
+
+  return response.json();
+}
+
+export async function deleteDocument(documentId) {
+  const response = await fetch(
+    `${API_URL}/documents/${documentId}`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+
+    throw new Error(
+      typeof data.detail === "string"
+        ? data.detail
+        : "Unable to delete document"
+    );
+  }
+
+  return response.json();
+}

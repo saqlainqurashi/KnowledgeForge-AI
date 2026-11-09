@@ -6,6 +6,10 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.services.chunking import chunk_text
 from app.services.document_loader import MAX_FILE_SIZE, extract_text
+from app.services.document_management import (
+    delete_document,
+    list_documents,
+)
 from app.services.document_storage import save_document
 from app.services.embeddings import generate_embeddings
 
@@ -67,3 +71,35 @@ async def upload_document(
 
     finally:
         await file.close()
+
+
+@router.get("/")
+def get_documents(db: Annotated[Session, Depends(get_db)]):
+    documents = list_documents(db)
+
+    return {
+        "total": len(documents),
+        "documents": documents,
+    }
+
+
+@router.delete("/{document_id}")
+def remove_document(
+    document_id: int,
+    db: Annotated[Session, Depends(get_db)],
+):
+    deleted = delete_document(
+        db=db,
+        document_id=document_id,
+    )
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Document not found",
+        )
+
+    return {
+        "message": "Document deleted successfully",
+        "document_id": document_id,
+    }
