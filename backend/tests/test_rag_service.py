@@ -90,7 +90,7 @@ def test_rag_generates_grounded_answer():
         db=db,
         query="How does RAG work?",
         top_k=2,
-        min_similarity=0.60,
+        min_similarity=0.0,
         document_id=None,
     )
 
@@ -145,7 +145,7 @@ def test_rag_passes_document_filter():
         db=db,
         query="What is RAG?",
         top_k=3,
-        min_similarity=0.60,
+        min_similarity=0.0,
         document_id=7,
     )
 
