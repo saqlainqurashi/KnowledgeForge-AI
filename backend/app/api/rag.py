@@ -17,6 +17,10 @@ router = APIRouter(prefix="/rag", tags=["RAG"])
 class QuestionRequest(BaseModel):
     question: str = Field(min_length=1)
     top_k: int = Field(default=3, ge=1, le=20)
+    document_id: int | None = Field(
+        default=None,
+        gt=0,
+    )
 
 
 @router.post("/ask")
@@ -29,6 +33,7 @@ def ask_question(
             db=db,
             question=request.question,
             top_k=request.top_k,
+            document_id=request.document_id,
         )
 
     except ValueError as exc:

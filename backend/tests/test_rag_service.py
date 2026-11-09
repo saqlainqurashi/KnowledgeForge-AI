@@ -5,6 +5,16 @@ import pytest
 from app.services.rag_service import answer_question
 
 
+def test_invalid_document_id():
+    db = MagicMock()
+
+    with pytest.raises(ValueError):
+        answer_question(
+            db=db,
+            question="What is RAG?",
+            document_id=-1,
+        )
+
 def test_reject_empty_question():
     db = MagicMock()
 
@@ -81,6 +91,7 @@ def test_rag_generates_grounded_answer():
         query="How does RAG work?",
         top_k=2,
         min_similarity=0.60,
+        document_id=None,
     )
 
     mock_generate.assert_called_once()
@@ -113,3 +124,30 @@ def test_irrelevant_context_does_not_call_gemini():
     assert result["sources"] == []
     assert result["answer"] == "No relevant documents were found."
     mock_generate.assert_not_called()
+
+
+
+
+def test_rag_passes_document_filter():
+    db = MagicMock()
+
+    with patch(
+        "app.services.rag_service.search_similar_chunks",
+        return_value=[],
+    ) as mock_search:
+        result = answer_question(
+            db=db,
+            question="What is RAG?",
+            document_id=7,
+        )
+
+    mock_search.assert_called_once_with(
+        db=db,
+        query="What is RAG?",
+        top_k=3,
+        min_similarity=0.60,
+        document_id=7,
+    )
+
+    assert result["sources"] == []
+    assert result["answer"] == "No relevant documents were found."

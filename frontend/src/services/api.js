@@ -23,7 +23,11 @@ export async function uploadDocument(file) {
   return data;
 }
 
-export async function askQuestion(question, topK = 3) {
+export async function askQuestion(
+  question,
+  topK = 3,
+  documentId = null
+) {
   const response = await fetch(`${API_URL}/rag/ask`, {
     method: "POST",
     headers: {
@@ -32,6 +36,7 @@ export async function askQuestion(question, topK = 3) {
     body: JSON.stringify({
       question,
       top_k: topK,
+      document_id: documentId,
     }),
   });
 

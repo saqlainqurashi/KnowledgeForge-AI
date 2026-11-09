@@ -16,7 +16,7 @@ export default function App() {
   const [uploadError, setUploadError] = useState("");
   const [loadingDocuments, setLoadingDocuments] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
-
+  const [selectedDocumentId, setSelectedDocumentId] = useState(null);
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
   const [asking, setAsking] = useState(false);
@@ -102,6 +102,9 @@ export default function App() {
 
     try {
       await deleteDocument(documentId);
+      setSelectedDocumentId((current) =>
+        current === documentId ? null : current
+      );
 
       setDocuments((previous) =>
         previous.filter(
@@ -137,7 +140,11 @@ export default function App() {
     ]);
 
     try {
-      const result = await askQuestion(currentQuestion);
+      const result = await askQuestion(
+        currentQuestion,
+        3,
+        selectedDocumentId
+      );
 
       setMessages((previous) => [
         ...previous,
@@ -287,10 +294,36 @@ export default function App() {
               uploaded documents.
             </p>
           </div>
+          <div className="search-scope">
+            <label htmlFor="document-scope">
+              Search in
+            </label>
 
-          <span className="status-pill">
-            RAG Assistant
-          </span>
+            <select
+              id="document-scope"
+              value={selectedDocumentId ?? ""}
+              onChange={(event) => {
+                const value = event.target.value;
+
+                setSelectedDocumentId(
+                  value === "" ? null : Number(value)
+                );
+              }}
+            >
+              <option value="">
+                All Documents
+              </option>
+
+              {documents.map((document) => (
+                <option
+                  key={document.id}
+                  value={document.id}
+                >
+                  {document.filename}
+                </option>
+              ))}
+            </select>
+          </div>
         </header>
 
         <section

@@ -399,3 +399,41 @@ button {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+.search-scope {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 190px;
+}
+
+.search-scope label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #68778e;
+}
+
+.search-scope select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dce2ec;
+  border-radius: 9px;
+  background: white;
+  color: #17243b;
+  font-size: 13px;
+  outline: none;
+}
+
+.search-scope select:focus {
+  border-color: #3157d5;
+}
+
+@media (max-width: 760px) {
+  .workspace-header {
+    flex-wrap: wrap;
+  }
+
+  .search-scope {
+    width: 100%;
+  }
+}
