@@ -37,11 +37,9 @@ def test_chunks_have_expected_overlap():
 
     assert result == ["abcdef", "efghij"]
 
-
 def test_invalid_chunk_size_raises_error():
     with pytest.raises(ValueError):
         chunk_text("some text", chunk_size=0)
-
 
 def test_overlap_must_be_smaller_than_chunk_size():
     with pytest.raises(ValueError):
@@ -50,7 +48,6 @@ def test_overlap_must_be_smaller_than_chunk_size():
             chunk_size=5,
             chunk_overlap=5,
         )
-
 
 def test_negative_overlap_raises_error():
     with pytest.raises(ValueError):
